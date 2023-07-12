@@ -5,6 +5,7 @@ import com.notnite.scraft.generateKey
 import java.sql.Connection
 import java.sql.DriverManager
 import java.util.*
+import kotlin.collections.ArrayList
 
 object ScraftDatabase {
     lateinit var db: Connection
@@ -173,5 +174,19 @@ object ScraftDatabase {
         rs.close()
         ps.close()
         return value
+    }
+
+    fun getClaimedUsers(user: UUID): ArrayList<String> {
+        val ps = db.prepareStatement("SELECT username AS count FROM scraft_bots WHERE owner = ?")
+        ps.setString(1, user.toString())
+        val rs = ps.executeQuery()
+        val out = ArrayList<String>()
+        while (rs.next()) {
+            out.add(rs.getString("username"))
+        }
+
+        rs.close()
+        ps.close()
+        return out
     }
 }
