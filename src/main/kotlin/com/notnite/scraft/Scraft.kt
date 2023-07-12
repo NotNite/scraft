@@ -3,6 +3,7 @@ package com.notnite.scraft
 import com.notnite.scraft.commands.APIKeyCommand
 import com.notnite.scraft.commands.ClaimUserCommand
 import com.notnite.scraft.commands.DropUserCommand
+import com.notnite.scraft.commands.ListUsersCommand
 import com.notnite.scraft.database.ScraftDatabase
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
@@ -25,6 +26,7 @@ object Scraft : ModInitializer {
             ClaimUserCommand.register(branch)
             DropUserCommand.register(branch)
             APIKeyCommand.register(branch)
+            ListUsersCommand.register(branch)
 
             dispatcher.register(branch)
         }
