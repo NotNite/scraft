@@ -34,6 +34,7 @@ object ScraftDatabase {
                 FOREIGN KEY(owner) REFERENCES scraft_users(uuid)
             );
             """,
+            "DELETE FROM scraft_bots_all; DELETE FROM scraft_bots;", // delete legacy bots
     )
 
     fun init() {
@@ -89,7 +90,8 @@ object ScraftDatabase {
         ps.close()
     }
 
-    fun createBot(owner: UUID, username: String): UUID? {
+    fun createBot(owner: UUID, username_: String): UUID? {
+        val username = username_.lowercase()
         val uuid = UUID.nameUUIDFromBytes("scraft:$owner:$username".encodeToByteArray())
         val botExists = checkUsernameOwner(username)
         if (botExists != null) {
@@ -119,7 +121,7 @@ object ScraftDatabase {
     fun deleteBot(owner: ScraftUser, username: String) {
         val ps = db.prepareStatement("DELETE FROM scraft_bots WHERE owner = ? AND username = ?")
         ps.setString(1, owner.toString())
-        ps.setString(2, username)
+        ps.setString(2, username.lowercase())
         ps.executeUpdate()
 
         ps.close()
@@ -138,7 +140,7 @@ object ScraftDatabase {
 
     fun checkUsernameOwner(username: String): UUID? {
         val ps = db.prepareStatement("SELECT owner FROM scraft_bots WHERE username = ?")
-        ps.setString(1, username)
+        ps.setString(1, username.lowercase())
         val rs = ps.executeQuery()
         if (!rs.next()) {
             rs.close()
