@@ -1,0 +1,4 @@
+accessWidener v1 named
+
+accessible class net/minecraft/server/network/ServerLoginNetworkHandler$State
+accessible method net/minecraft/server/ServerConfigList contains (Ljava/lang/Object;)Z
