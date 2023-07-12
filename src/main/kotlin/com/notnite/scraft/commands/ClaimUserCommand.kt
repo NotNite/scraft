@@ -6,7 +6,6 @@ import com.mojang.brigadier.context.CommandContext
 import com.notnite.scraft.Scraft
 import com.notnite.scraft.database.ScraftDatabase
 import com.notnite.scraft.getState
-import com.notnite.scraft.mixin.ServerPlayNetworkHandlerAccessor
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerLoginNetworkHandler
@@ -16,13 +15,20 @@ object ClaimUserCommand {
     fun register(root: LiteralArgumentBuilder<ServerCommandSource>) {
         val branch = CommandManager.literal("claimuser")
                 .then(CommandManager.argument("name", StringArgumentType.string())
-                        .executes { run(it) }
+                        .executes {
+                            try {
+                                run(it)
+                            } catch (e: Exception) {
+                                Scraft.logger.error("Failed to run claimuser", e)
+                                throw e
+                            }
+                        }
                 )
 
         root.then(branch)
     }
 
-    fun run(context: CommandContext<ServerCommandSource>): Int {
+    private fun run(context: CommandContext<ServerCommandSource>): Int {
         val state = getState(context)
         if (state == null) {
             context.source.sendError(Text.of("nice try"))

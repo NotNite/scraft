@@ -119,7 +119,7 @@ object ScraftDatabase {
         return uuid
     }
 
-    fun deleteBot(owner: ScraftUser, username: String) {
+    fun deleteBot(owner: UUID, username: String) {
         val ps = db.prepareStatement("DELETE FROM scraft_bots WHERE owner = ? AND username = ?")
         ps.setString(1, owner.toString())
         ps.setString(2, username.lowercase())
@@ -177,7 +177,7 @@ object ScraftDatabase {
     }
 
     fun getClaimedUsers(user: UUID): ArrayList<String> {
-        val ps = db.prepareStatement("SELECT username AS count FROM scraft_bots WHERE owner = ?")
+        val ps = db.prepareStatement("SELECT username FROM scraft_bots WHERE owner = ?")
         ps.setString(1, user.toString())
         val rs = ps.executeQuery()
         val out = ArrayList<String>()

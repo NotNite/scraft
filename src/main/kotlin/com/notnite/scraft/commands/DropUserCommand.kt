@@ -3,6 +3,7 @@ package com.notnite.scraft.commands
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
+import com.notnite.scraft.Scraft
 import com.notnite.scraft.database.ScraftDatabase
 import com.notnite.scraft.getState
 import net.minecraft.server.command.CommandManager
@@ -13,7 +14,14 @@ object DropUserCommand {
     fun register(root: LiteralArgumentBuilder<ServerCommandSource>) {
         val branch = CommandManager.literal("dropuser")
                 .then(CommandManager.argument("name", StringArgumentType.string())
-                        .executes { run(it) }
+                        .executes {
+                            try {
+                                run(it)
+                            } catch (e: Exception) {
+                                Scraft.logger.error("Failed to run dropuser", e)
+                                throw e
+                            }
+                        }
                 )
 
         root.then(branch)
@@ -33,19 +41,19 @@ object DropUserCommand {
         }
 
         val owner = ScraftDatabase.checkUsernameOwner(name)
-        if (owner != state.owner!!.uuid) {
+        if (owner != context.source.player!!.uuid) {
             context.source.sendError(Text.of("You don't own that username."))
             return 0
         }
 
         ScraftDatabase.deleteBot(
-                state.owner!!,
+                context.source.player!!.uuid,
                 name
         )
 
         val server = context.source.server
-        if (server.playerManager.playerNames.contains(name)) {
-            val player = server.playerManager.getPlayer(name)
+        if (server.playerManager.playerNames.contains("+$name")) {
+            val player = server.playerManager.getPlayer("+$name")
             player?.networkHandler?.disconnect(Text.of("Your owner has slain you. Goodnight, sweet child."))
         }
 

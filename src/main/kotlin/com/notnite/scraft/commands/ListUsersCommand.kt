@@ -2,6 +2,7 @@ package com.notnite.scraft.commands
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
+import com.notnite.scraft.Scraft
 import com.notnite.scraft.database.ScraftDatabase
 import com.notnite.scraft.getState
 import net.minecraft.server.command.CommandManager
@@ -14,7 +15,14 @@ object ListUsersCommand {
 
     fun register(root: LiteralArgumentBuilder<ServerCommandSource>) {
         val branch = CommandManager.literal("listusers")
-                .executes { run(it) }
+                .executes {
+                    try {
+                        run(it)
+                    } catch (e: Exception) {
+                        Scraft.logger.error("Failed to run listusers", e)
+                        throw e
+                    }
+                }
 
         root.then(branch)
     }

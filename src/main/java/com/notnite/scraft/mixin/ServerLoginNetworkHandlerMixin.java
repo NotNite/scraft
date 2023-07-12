@@ -50,7 +50,7 @@ public class ServerLoginNetworkHandlerMixin {
         var hostname = state.getHostname();
         Validate.validState(hostname != null, "Hostname is null");
 
-        if (!hostname.startsWith("scraft_")) {
+        if (!hostname.startsWith("scraft_") && !hostname.startsWith("scraft-")) {
             // encrypted connection codepath stays for normal players
             this.state = ServerLoginNetworkHandler.State.KEY;
             this.connection.send(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
