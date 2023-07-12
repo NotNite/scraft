@@ -2,7 +2,6 @@ package com.notnite.scraft.commands
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import com.notnite.scraft.Scraft
 import com.notnite.scraft.database.ScraftDatabase
 import com.notnite.scraft.getState
 import net.minecraft.server.command.CommandManager
@@ -16,14 +15,7 @@ import net.minecraft.util.Formatting
 object APIKeyCommand {
     fun register(root: LiteralArgumentBuilder<ServerCommandSource>) {
         val branch = CommandManager.literal("apikey")
-                .executes {
-                    try {
-                        run(it)
-                    } catch (e: Exception) {
-                        Scraft.logger.error("fuck", e)
-                        return@executes 0
-                    }
-                }
+                .executes { run(it) }
 
         root.then(branch)
     }
